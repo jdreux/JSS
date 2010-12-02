@@ -1,0 +1,97 @@
+package net.saje.js.adapters;
+
+import java.util.Collection;
+import java.util.List;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.jdo.Transaction;
+
+import net.saje.persistence.PersistenceProvider;
+import net.saje.persistence.SajeEntity;
+
+
+public class PersistenceAdapter{
+	PersistenceManager pm;
+	
+	private static PersistenceAdapter instance;
+	
+	public static PersistenceAdapter getInstance(){
+		if(instance == null){
+			instance = new PersistenceAdapter();
+		}
+		return instance;
+	}
+	
+	private PersistenceAdapter(){
+		pm = PersistenceProvider.getPersistenceManager();
+	}
+	
+	public void persist(SajeEntity o){
+		Transaction tx = pm.currentTransaction();
+	    tx.begin();
+	    pm.makePersistent(o);
+	    tx.commit();
+	}
+	
+	public void persistAll(SajeEntity[] array){
+		Transaction tx = pm.currentTransaction();
+	    tx.begin();
+	    pm.makePersistentAll((Object [])array);
+	    tx.commit();
+	}
+	
+	public void remove(SajeEntity o){
+		Transaction tx = pm.currentTransaction();
+	    tx.begin();
+	    pm.deletePersistent(o);
+	    tx.commit();
+	}
+	
+	public void removeAll(SajeEntity[] array){
+		Transaction tx = pm.currentTransaction();
+	    tx.begin();
+	    pm.deletePersistentAll((Object [])array);
+	    tx.commit();
+	}
+	
+	public SajeEntity get(SajeEntity o){
+		return this.get(o.getClass(), o.getId());
+	}
+	
+	public SajeEntity get(Class<?> c, long id){
+		Query query = pm.newQuery(c, "id == " + id);
+		query.setUnique(true);
+		return (SajeEntity)query.execute();
+	}
+	
+	public SajeEntity getUniqueByField(Class<?> c, String fieldName, String fieldValue){
+		Query query = pm.newQuery(c, fieldName+" == " +fieldValue);
+		query.setUnique(true);
+		return (SajeEntity) query.execute();
+	}
+	
+	public SajeEntity[] getByField(Class<?> c, String fieldName, String fieldValue){
+		Query query = pm.newQuery(c, fieldName+" == " +fieldValue);
+		Collection<SajeEntity> o = (Collection<SajeEntity>)query.execute();
+		return (SajeEntity[])o.toArray(new SajeEntity[o.size()]);
+	}
+	
+	public SajeEntity[] getByQueryString(Class<?>c, String queryString){
+		Query query = pm.newQuery(c, queryString);
+		Collection<SajeEntity> o = (Collection<SajeEntity>)query.execute();
+		return (SajeEntity[])o.toArray(new SajeEntity[o.size()]);
+	}
+	
+	public SajeEntity[] getAll(Class<?> c){
+		
+		Query q = pm.newQuery(c);
+		
+		List<SajeEntity> execute = (List<SajeEntity>) q.execute();
+		if(execute==null){
+			return null;
+		}
+		return execute.toArray(new SajeEntity[execute.size()]);
+	}
+
+}

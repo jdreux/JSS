@@ -1,0 +1,57 @@
+package net.saje.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jdo.JDOEnhancer;
+import javax.jdo.JDOHelper;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
+import net.saje.persistence.PersistenceProvider;
+
+
+public class ContextListener implements ServletContextListener {
+	
+	@Override
+	public void contextInitialized(ServletContextEvent arg0) {
+		System.out.println("Context is being initialized");
+		
+		JDOEnhancer enhancer = JDOHelper.getEnhancer();
+	    enhancer.setClassLoader(this.getClass().getClassLoader());
+	    enhancer.setVerbose(true);
+	    //enhancer.addPersistenceUnit("my-persistence-unit");
+	    String packageName = "com.philippeauriol.models";
+	    Package models = Package.getPackage(packageName);
+	    List<Class> classes = new ArrayList<Class>();
+	    for(Class c:classes){
+	    	enhancer.addClasses(c.getName());
+	    }
+	    
+	    
+	    
+//	    enhancer.addClasses(BlueEntity.class.getName());
+	    // add entities to be enhanced to this list...
+	    enhancer.enhance();
+	   /* Properties properties = new Properties();
+	    properties.setProperty("javax.jdo.PersistenceManagerFactoryClass",
+	         "org.datanucleus.jdo.JDOPersistenceManagerFactory");
+	    properties.setProperty("javax.jdo.option.PersistenceUnitName",
+	         "my-persistence-unit");
+	    PersistenceManagerFactory factory =
+	         JDOHelper.getPersistenceManagerFactory(properties, 
+	            this.getClass().getClassLoader());
+	    PersistenceManager persistenceManager =
+	        factory.getPersistenceManager();*/
+		
+		PersistenceProvider.createPersistenceManager();
+	}
+	
+	@Override
+	public void contextDestroyed(ServletContextEvent arg0) {
+		System.out.println("Context is being destroyed");
+		PersistenceProvider.closePersistenceManager();
+	}
+
+
+}

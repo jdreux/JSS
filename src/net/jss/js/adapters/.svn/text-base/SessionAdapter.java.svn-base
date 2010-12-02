@@ -1,0 +1,20 @@
+package net.saje.js.adapters;
+
+import javax.servlet.http.HttpSession;
+
+import net.saje.controller.FrontController;
+import net.saje.controller.SajeContext;
+
+public class SessionAdapter {
+	
+	
+	public static HttpSession getInstance() throws Exception{
+		HttpSession session = FrontController.context.getSession();
+		
+		if(session == null){
+			throw new Exception("Could not get a valid HTTP Session.");
+		}
+		
+		return session;
+	}
+}

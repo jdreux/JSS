@@ -1,0 +1,1 @@
+System.out.println("In admin script");

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<taglib>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>1.1</jspversion>
+	<shortname>sj</shortname>
+	<tag>
+		<name>script</name>
+		<tagclass>net.saje.controller.tags.ScriptTag</tagclass>
+		<body-content>tagdependent</body-content>
+		<attribute>
+			<name>runat</name>
+			<required>true</required>
+			<rtexprvalue>server</rtexprvalue>
+			<type>fully_qualified_type</type>
+			
+		</attribute>
+	</tag>
+	<tag>
+		<name>value</name>
+		<tagclass>net.saje.controller.tags.ValueTag</tagclass>
+		<body-content>empty</body-content>
+		<attribute>
+			<name>expr</name>
+			<required>true</required>
+			<type>fully_qualified_type</type>
+		</attribute>
+	</tag>
+</taglib>

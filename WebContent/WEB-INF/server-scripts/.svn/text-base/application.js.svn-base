@@ -1,0 +1,4 @@
+//Import client app's packages
+importPackage(com.philippeauriol.models);
+
+System.out.println("Importing models. Text is: "+Text);

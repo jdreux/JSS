@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/prso/!svn/ver/7/saje-core/src/net/saje/js/adapters
+END
+AuthenticationAdapter.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/prso/!svn/ver/7/saje-core/src/net/saje/js/adapters/AuthenticationAdapter.java
+END
+FormHelperAdapter.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/prso/!svn/ver/7/saje-core/src/net/saje/js/adapters/FormHelperAdapter.java
+END
+JavascriptSupportAdapter.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/prso/!svn/ver/7/saje-core/src/net/saje/js/adapters/JavascriptSupportAdapter.java
+END
+SessionAdapter.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/prso/!svn/ver/7/saje-core/src/net/saje/js/adapters/SessionAdapter.java
+END
+PersistenceAdapter.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/prso/!svn/ver/7/saje-core/src/net/saje/js/adapters/PersistenceAdapter.java
+END

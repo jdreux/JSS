@@ -1,0 +1,69 @@
+package net.saje.controller.tags;
+
+import java.io.IOException;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import net.saje.js.ScriptCore;
+
+public class ScriptTag extends BodyTagSupport {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private static final String PROTECTED_ATTRIBUTE_VALUE = "protected";
+	private static final String SERVER_ATTRIBUTE_VALUE = "server";
+
+	private String runat;
+
+	public String getRunat() {
+		return runat;
+	}
+
+	public void setRunat(String runat) {
+		this.runat = runat;
+	}
+
+	@Override
+	public int doAfterBody() throws JspException {
+		
+		
+		String runatParameter = this.getRunat();
+		String scriptCode = this.getBodyContent().getString();
+		
+		// clean up
+		this.getBodyContent().clearBody();
+		
+		System.out.println(runatParameter+" script contains code: "+scriptCode);
+		
+		ScriptCore scriptCore = ScriptCore.getInstance();
+		
+		try {
+			if (runatParameter.equals(ScriptTag.PROTECTED_ATTRIBUTE_VALUE)) {
+				String scriptToWrite = scriptCore.receiveProtectedScript(scriptCode);
+				JspWriter out = this.getPreviousOut();
+				out.write("<script> " + scriptToWrite + "</script>");
+			} else if (runatParameter.equals(ScriptTag.SERVER_ATTRIBUTE_VALUE)) {
+				scriptCore.receiveServerScript(scriptCode);
+				JspWriter out = this.getPreviousOut();
+				out.write("");
+			} else {
+				throw new JspException("runat paramenter '"+runatParameter+"' is not supported. Supported values are server|protected.");
+			}
+		} catch (IOException e) {
+			JspException e2 = new JspException(e.getMessage());
+			e2.setStackTrace(e.getStackTrace());
+			throw e2;
+		}
+		
+		return BodyTagSupport.SKIP_BODY;
+	}
+
+
+	
+}
