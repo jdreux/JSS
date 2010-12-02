@@ -1,0 +1,13 @@
+JSS Framework
+
+Copyright 2010, Julien Dreux
+
+https://github.com/jdreux/JSS
+http://jss-framework.net/
+
+NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+
+This software comes with no implied warranty and as a 
+matter of fact is still in early beta so it comes with guarantee of failure.
+
+Date: Wed Dec 1st, 2010. 
