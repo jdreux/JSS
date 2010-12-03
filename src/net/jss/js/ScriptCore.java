@@ -84,7 +84,7 @@ public class ScriptCore {
 
 		try {
 			Object o = engine.eval(js);
-			System.out.println("Executing " + js + ", the result is: " + o);
+			System.out.println("Executed " + js + ", the result is: " + o);
 			return o;
 		} catch (ScriptException e) {
 			e.printStackTrace();

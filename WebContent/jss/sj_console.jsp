@@ -50,7 +50,10 @@
 			<span style="color:#666">Type your server js code below. 
 				Disable for production instances!</span>
 		</p>
-		<textarea style="width:800px; height:40px;"></textarea>
+		<!-- <textarea style="width:800px; height:40px;"></textarea> -->
+		<div id="wrapper">
+			<input type="text" style="width:800px;"/>
+		</div>
 		<center>...</center>
 		<div id="holder">
 		</div>
@@ -58,8 +61,8 @@
 	<script>
 		$().ready(function(){
 			function doit(){
-				var text = $("textarea").val();
-				$("textarea").val("");
+				var text = $("input").val();
+				$("input").val("");
 				var html='<p><span class="prompt">></span>&nbsp;<span class="code"></span><br/>&nbsp;&nbsp;&nbsp;<span class="response">"true"</span></p>';
 				$("#holder").append(html);
 				$("#holder>p:last").find(".code").html(text);
@@ -68,11 +71,7 @@
 				$("#holder>p:last").find(".response").html(result);
 			}
 			
-			$("input").click(function(){
-				doit();
-			});
-			
-			$("textarea").keypress(function(e){
+			$("#wrapper").keypress(function(e){
 				var code = (e.keyCode ? e.keyCode : e.which);
 				 if(code == 13) { //Enter keycode
 				   doit();

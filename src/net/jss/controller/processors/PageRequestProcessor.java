@@ -28,13 +28,16 @@ public class PageRequestProcessor implements JSSProcessor {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 		
-		if (!request.getRequestURI().endsWith(".html")) {
+		if (!request.getRequestURI().endsWith(".html") && !request.getRequestURI().endsWith("/")) {
 			throw new ServletException(
 					"Cannot handle requests for non .html. Request was: "
 							+ request.getRequestURI());
 		}
 
 		String path = request.getServletPath();
+		if(path.endsWith("/")){
+			path += ".index.html";
+		}
 		path = path.substring(0, path.length() - ".html".length()) + ".jsp";
 		System.out.println("Forwarding request to: " + path);
 		RequestDispatcher dispatcher = servletContext

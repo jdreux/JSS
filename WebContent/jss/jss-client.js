@@ -121,22 +121,23 @@ JSS.comet = function(params) {
 		if (data.event !== null) {
 			JSS.events.fireEvent(event);
 		}
-		// JSS.comet({});
+//		JSS.comet({});
 	}
-
+	alert(JSS.contextName)
 	$.ajax({
 		type : "POST",
 		url : JSS.contextName + "/sj_comet/",
 		data : params,
-		async : false,
+		async : true,
 		success : callback,
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
 			alert('error ' + textStatus + ' ' + errorThrown);
-			JSS.commet({});
+//			JSS.commet({});
 		}
 	});
 };
 
 $(document).ready(function() {
-	// JSS.comet({});
+	//Begin an asynchronous connection with the server ASAP.
+	JSS.comet({});
 });

@@ -27,7 +27,7 @@ public class ConsoleProcessor implements JSSProcessor {
 			ServletContext servletContext) throws ServletException, IOException {
 	
 		RequestDispatcher dispatcher = servletContext
-				.getRequestDispatcher("/sj_console.jsp");
+				.getRequestDispatcher("/jss/sj_console.jsp");
 		dispatcher.forward(request, response);
 	}
 

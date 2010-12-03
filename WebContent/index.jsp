@@ -21,17 +21,36 @@
 		
 		<!-- Show off some capabilities of JSS -->
 		<sj:script runat="server">
-			//Access properties of the java.lang.System and java.lang.Runtime objects.
-			var osName = System.getProperty("os.name");
-			var availableCores = Runtime.getRuntime().availableProcessors();
-			var freeMemory = Runtime.getRuntime().freeMemory();
-			var maxMemory = Runtime.getRuntime().maxMemory();
-			var totalMemory = Runtime.getRuntime().totalMemory();
+			
+			function getSystemInfo(){
+				var obj = {};
+				//Access properties of the java.lang.System and java.lang.Runtime objects.
+				obj.osName = System.getProperty("os.name");
+				obj.availableCores = Runtime.getRuntime().availableProcessors();
+				obj.freeMemory = Runtime.getRuntime().freeMemory();
+				obj.maxMemory = Runtime.getRuntime().maxMemory();
+				obj.totalMemory = Runtime.getRuntime().totalMemory();
+				obj.currentTime = java.util.Calendar.getInstance().getTime().toString();
+				return obj;
+			}
+			var systemInfo = getSystemInfo();
+			
+			function callback(){
+				var event = {type: 'systemInfoUpdate', data: getSystemInfo};
+				JSS.events.fireEvent(event);
+			}
+
+			if(this.interval!==undefined){
+				clearInterval(this.interval);
+			}
+	
+			this.interval = setInterval(callback, 1000);
+			
 		</sj:script>
 		
 		<p>
-			<b>System Information: </b> running <sj:value expr="osName"/>, <sj:value expr="availableCores"/> cores, <sj:value expr="totalMemory"/>
-			total memory ( <sj:value expr="freeMemory"/> free).
+			<b>System Information: </b> running <sj:value expr="systemInfo.osName"/>, <sj:value expr="systemInfo.availableCores"/> cores, <sj:value expr="systemInfo.totalMemory"/>
+			total memory ( <sj:value expr="systemInfo.freeMemory"/> free). The current time is <sj:value expr="systemInfo.currentTime"/>.
 		</p>
 		
 		<br/>
