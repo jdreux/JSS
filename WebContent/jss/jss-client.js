@@ -60,24 +60,18 @@ JSS.events = new function() {
 
 	this.fireEvent = function(event, received) {
 
-		if (typeof event === "string") {
+//		if (typeof event === "string") {
 			// shortcut for when a simple event is fired
-			event = new JSS.event(event);
-		}
+//			event = new JSS.event(event);
+//		}
 
 		JSS.log("Firing event with type: " + event.type)
 
 		if (listeners[event.type]) {
 			var callbacks = listeners[event.type];
-
+			JSS.log(callbacks.length+" listeners were found");
 			for ( var i = 0; i < callbacks.length; i++) {
-
-				if (callbacks[i][1]) {
-					callbacks[i][0].call(callbacks[i][1], event);
-				} else {
-					callbacks[i][0](event);
-				}
-
+				callbacks[i](event);
 			}
 		}
 
@@ -95,18 +89,18 @@ JSS.events = new function() {
 		this.fireEvent(event, true);
 	};
 
-	this.bind = function(eventType, callback, object) {
+	this.bind = function(eventType, callback) {
 		if (listeners[eventType] === undefined) {
-			listeners[eventType] = [ [ callback, object ] ];
+			listeners[eventType] = [callback];
 		} else {
-			listeners.push([ callback, object ]);
+			listeners.push(callback);
 		}
 	};
 
 	this.unbind = function(eventType, callback) {
 		var typeListeners = listeners[type];
 		for ( var i = 0; i < typeListeners.length; i++) {
-			if (typeListeners[i][0] === callback) {
+			if (typeListeners[i] === callback) {
 				typeListeners.splice(i, 1);
 				break;
 			}
@@ -116,14 +110,13 @@ JSS.events = new function() {
 
 JSS.comet = function(params) {
 
-	function callback(data) {
-		alert("commet returned: " + data);
-		if (data.event !== null) {
-			JSS.events.fireEvent(event);
+	function callback(event) {
+		if (event !== null) {
+			JSS.events.fireEvent(JSON.parse(event));
 		}
 //		JSS.comet({});
 	}
-	alert(JSS.contextName)
+
 	$.ajax({
 		type : "POST",
 		url : JSS.contextName + "/sj_comet/",
@@ -131,7 +124,7 @@ JSS.comet = function(params) {
 		async : true,
 		success : callback,
 		error : function(XMLHttpRequest, textStatus, errorThrown) {
-			alert('error ' + textStatus + ' ' + errorThrown);
+			//alert('error ' + textStatus + ' ' + errorThrown);
 //			JSS.commet({});
 		}
 	});
@@ -139,5 +132,5 @@ JSS.comet = function(params) {
 
 $(document).ready(function() {
 	//Begin an asynchronous connection with the server ASAP.
-	JSS.comet({});
+//	JSS.comet({});
 });

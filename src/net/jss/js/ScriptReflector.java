@@ -10,30 +10,27 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.servlet.ServletContext;
 
- import net.jss.controller.FrontController;
-
+import net.jss.controller.FrontController;
 
 public class ScriptReflector {
-	
-	private static final String REFLECTION_SCRIPT_PATH = "WEB-INF/server-scripts/jss-reflection.js";
-	
+
 	ScriptEngine engine;
-	
-	public ScriptReflector(String script) throws ScriptException{
+
+	public ScriptReflector(String script) throws ScriptException {
 		this.engine = new ScriptEngineManager().getEngineByName("JavaScript");
 		this.engine.eval(script);
 	}
-	
-	public ScriptReflector(Reader fr) throws ScriptException{
+
+	public ScriptReflector(Reader fr) throws ScriptException {
 		this.engine = new ScriptEngineManager().getEngineByName("JavaScript");
 		this.engine.eval(fr);
 	}
-	
-	public String[] getDefinedMethods() throws FileNotFoundException{
-		 try {
-			 ServletContext sc = FrontController.context.getServletContext();
-			Reader reader = new FileReader(new File(sc.getRealPath(REFLECTION_SCRIPT_PATH)));
-			return this.engine.eval(reader).toString().split(","); 
+
+	public String[] getDefinedMethods() throws FileNotFoundException {
+		try {
+			ServletContext sc = FrontController.context.getServletContext();
+			Reader reader = new FileReader(new File(sc.getRealPath(ScriptCore.REFLECTION_SCRIPT_PATH)));
+			return this.engine.eval(reader).toString().split(",");
 		} catch (ScriptException e) {
 			e.printStackTrace();
 			return null;

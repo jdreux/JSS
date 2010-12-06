@@ -15,23 +15,22 @@ import net.jss.controller.FrontController;
 
 public class ScriptCore {
 
-	public static final String JSS_SCRIPTS_PATH = "/WEB-INF/jss/";
+	static final String JSS_SCRIPTS_PATH = "/WEB-INF/jss/";
 	public static final String SERVER_SCRIPTS_PATH = "/WEB-INF/server-scripts/";
-	private static final String JSON2JS_SCRIPT_PATH = JSS_SCRIPTS_PATH + "jss-json2.js";
-	private static final String SERVER_SCRIPT_PATH = JSS_SCRIPTS_PATH + "jss-server.js";
-	private static final String APPLICATION_SCRIPT_PATH = SERVER_SCRIPTS_PATH + "application.js";
-
-	private static final String APPLICATION_PACAKGE_NAME = "com.sampleapp";
-
+	static final String JSON2JS_SCRIPT_PATH = JSS_SCRIPTS_PATH + "jss-json2.js";
+	static final String SERVER_SCRIPT_PATH = JSS_SCRIPTS_PATH + "jss-server.js";
+	static final String APPLICATION_SCRIPT_PATH = SERVER_SCRIPTS_PATH + "application.js";
+	static final String REFLECTION_SCRIPT_PATH = "WEB-INF/jss/jss-reflection.js";
+	
 	public static ScriptCore getInstance() {
 
 		HttpSession session = FrontController.context.getSession();
-		ScriptCore instance = (ScriptCore) session.getAttribute("ScriptCore");
+		ScriptCore instance = (ScriptCore) session.getAttribute(ScriptCore.class.getName());
 		if (instance == null) {
 			System.out.println("Creating new scripting environement");
 			try {
 				instance = new ScriptCore();
-				session.setAttribute("ScriptCore", instance);
+				session.setAttribute(ScriptCore.class.getName(), instance);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -43,7 +42,7 @@ public class ScriptCore {
 	}
 
 	public static boolean isInstanceInSession() {
-		return FrontController.context.getSession().getAttribute("ScriptCore") != null;
+		return FrontController.context.getSession().getAttribute(ScriptCore.class.getName()) != null;
 	}
 
 	ScriptEngine engine;
@@ -64,11 +63,12 @@ public class ScriptCore {
 		this.engine.eval(reader);
 
 		// ApplicationRoot.js
-		//reader = new FileReader(new File(sc.getRealPath(APPLICATION_SCRIPT_PATH)));
-		//this.engine.eval(reader);
+		// reader = new FileReader(new
+		// File(sc.getRealPath(APPLICATION_SCRIPT_PATH)));
+		// this.engine.eval(reader);
 
 		// Add the application's packages
-		//this.engine.eval("importPackage(" + APPLICATION_PACAKGE_NAME + ");");
+		// this.engine.eval("importPackage(" + APPLICATION_PACAKGE_NAME + ");");
 	}
 
 	public Object executeScript(Reader fr) {
@@ -80,41 +80,18 @@ public class ScriptCore {
 		}
 	}
 
-	public Object executeScript(String js) {
+	public Object getValueOf(String js) {
+		Object o = engine.getContext().getAttribute(js);
+		// System.out.println("Value of "+js+" is "+o==null?"null":o.toString());
+		return o;
+	}
 
+	public Object executeScript(String js) {
 		try {
 			Object o = engine.eval(js);
 			System.out.println("Executed " + js + ", the result is: " + o);
 			return o;
 		} catch (ScriptException e) {
-			e.printStackTrace();
-			return e.toString();
-		}
-	}
-
-	public String toJSONString(Object jsObject) {
-		try {
-			System.out.println("Parsing " + jsObject + " to JSON string.");
-			ScriptEngine e = new ScriptEngineManager().getEngineByName("JavaScript");
-
-			// Load the required scripts.
-			ServletContext sc = FrontController.context.getServletContext();
-
-			// json2.js
-			Reader reader = new FileReader(new File(sc.getRealPath(JSON2JS_SCRIPT_PATH)));
-			e.eval(reader);
-			String varName = "JSS_jsonObject";
-			e.put(varName, jsObject);
-			String r = e.eval("JSON.stringify(" + varName + ")").toString();
-			System.out.println("The resulting JSON string is: " + r);
-			return r;
-
-		} catch (ScriptException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return e.toString();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return e.toString();
 		}

@@ -1,4 +1,4 @@
-<%@ taglib uri="/WEB-INF/tld/jslib.tld" prefix="sj" %>
+<%@ taglib uri="/WEB-INF/jss/jslib.tld" prefix="sj" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -20,8 +20,7 @@
 		</p>
 		
 		<!-- Show off some capabilities of JSS -->
-		<sj:script runat="server">
-			
+		<sj:script runat="protected">
 			function getSystemInfo(){
 				var obj = {};
 				//Access properties of the java.lang.System and java.lang.Runtime objects.
@@ -31,12 +30,16 @@
 				obj.maxMemory = Runtime.getRuntime().maxMemory();
 				obj.totalMemory = Runtime.getRuntime().totalMemory();
 				obj.currentTime = java.util.Calendar.getInstance().getTime().toString();
+				//System.out.println("Returning "+JSON.stringify(obj));
 				return obj;
 			}
-			var systemInfo = getSystemInfo();
+		</sj:script>
+		
+		<sj:script runat="server">
+			//var systemInfo = getSystemInfo();
 			
 			function callback(){
-				var event = {type: 'systemInfoUpdate', data: getSystemInfo};
+				var event = {type: 'systemInfoUpdate', data: getSystemInfo()};
 				JSS.events.fireEvent(event);
 			}
 
@@ -48,9 +51,31 @@
 			
 		</sj:script>
 		
+		<script>
+		$(document).ready(function(){
+			var systemInfo = getSystemInfo();
+			
+			function displaySystemInfo(data){
+				$("#osName").html(data.osName);
+				$("#availableCores").html(data.availableCores);
+				$("#totalMemory").html(data.totalMemory);
+				$("#freeMemory").html(data.freeMemory);
+				$("#currentTime").html(data.currentTime);
+			}
+			
+			displaySystemInfo(systemInfo);
+			
+			JSS.events.bind('systemInfoUpdate', function(event){displaySystemInfo(event.data);});
+		});
+		</script>
+		
 		<p>
-			<b>System Information: </b> running <sj:value expr="systemInfo.osName"/>, <sj:value expr="systemInfo.availableCores"/> cores, <sj:value expr="systemInfo.totalMemory"/>
-			total memory ( <sj:value expr="systemInfo.freeMemory"/> free). The current time is <sj:value expr="systemInfo.currentTime"/>.
+			<b>System Information: </b> running <span id="osName"><sj:value expr="systemInfo.osName"/></span>,
+			 <span id="availableCores"><sj:value expr="systemInfo.availableCores"/></span> cores, 
+			 <span id="totalMemory"><sj:value expr="systemInfo.totalMemory"/></span>
+			total memory ( 
+			<span id="freeMemory"><sj:value expr="systemInfo.freeMemory"/></span> free). The current time is 
+			<span id="currentTime"><sj:value expr="systemInfo.currentTime"/></span>.
 		</p>
 		
 		<br/>

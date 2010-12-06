@@ -1,4 +1,4 @@
-<%@ taglib uri="/WEB-INF/tld/jslib.tld" prefix="sj" %>
+<%@ taglib uri="/WEB-INF/jss/jslib.tld" prefix="sj" %>
 <% String contextPath = request.getContextPath(); %>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 <script src="<%=contextPath%>/jss/jss-client.js"></script>

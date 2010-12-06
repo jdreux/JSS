@@ -9,8 +9,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import net.jss.js.ScriptCore;
+import net.jss.controller.FrontController;
+import net.jss.js.JSSON;
 
 public class EventProcessor implements JSSProcessor {
 
@@ -18,16 +20,26 @@ public class EventProcessor implements JSSProcessor {
 	Queue<Object> eventBuffer;
 
 	public static EventProcessor getInstance() {
-		return new EventProcessor();
+		HttpSession session = FrontController.context.getSession();
+		EventProcessor instance = (EventProcessor) session.getAttribute(EventProcessor.class.getName());
+		if (instance == null) {
+			try {
+				instance = new EventProcessor();
+				session.setAttribute(EventProcessor.class.getName(), instance);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				instance = null;
+			}
+		}
+		return instance;
 	}
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext)
 			throws ServletException, IOException {
 		// GET requests disabled for the Comet servlet.
-		System.out.println("Initializing AsyncContext");
-		aCtx = request.startAsync(request, response);
-		// response.sendError(HttpServletResponse.SC_FORBIDDEN);
+		response.sendError(HttpServletResponse.SC_FORBIDDEN);
 	}
 
 	@Override
@@ -35,10 +47,12 @@ public class EventProcessor implements JSSProcessor {
 			throws ServletException, IOException {
 		System.out.println("Initializing AsyncContext");
 		aCtx = request.startAsync(request, response);
+		flushEvents();
 	}
 
 	public synchronized void broadcastServerEvent(Object jsEvent) {
 		System.out.println("Event processor: brodcasting event to client: "+jsEvent);
+		System.out.println(this);
 		try {
 			if (aCtx == null) {
 				// AsyncContext was not initialized properly yet. Keep the event
@@ -46,15 +60,11 @@ public class EventProcessor implements JSSProcessor {
 				if (eventBuffer == null)
 					eventBuffer = new LinkedList<Object>();
 				eventBuffer.add(jsEvent);
+				System.out.println("Async Context not initialized. "+eventBuffer.size()+" events in queue.");
 			} else {
 				// We have a valid AsynContext
 
-				if (eventBuffer != null) {
-					// Process all events that might be waiting.
-					while (eventBuffer.size() > 0) {
-						startAsyncTransaction(eventBuffer.remove());
-					}
-				}
+				flushEvents();
 				
 				startAsyncTransaction(jsEvent);
 			}
@@ -62,20 +72,32 @@ public class EventProcessor implements JSSProcessor {
 			e.printStackTrace();
 		}
 	}
-
+	
+	private void flushEvents(){
+		if (eventBuffer != null) {
+			// Process all events that might be waiting.
+			while (eventBuffer.size() > 0) {
+				startAsyncTransaction(eventBuffer.remove());
+			}
+		}
+	}
+	
 	private void startAsyncTransaction(final Object jsEvent) {
+		System.out.println("Starting async connection");
 		aCtx.start(new Runnable() {
 			public void run() {
-				ScriptCore sc = ScriptCore.getInstance();
-				String json = sc.toJSONString(jsEvent);
+				String json = JSSON.toJSONString(jsEvent);
 				System.out.println("JSON is: " + json);
 				try {
 					aCtx.getResponse().getWriter().print(json);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					System.out.println("Ending current thread");
+				} finally{
+					aCtx.complete();
+					aCtx = null;
 				}
-				aCtx.complete();
 			}
 		});
 	}

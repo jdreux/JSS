@@ -8,7 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
- import net.jss.js.ScriptCore;
+import net.jss.js.JSSON;
+import net.jss.js.ScriptCore;
 
 public class AjaxProcessor implements JSSProcessor {
 	
@@ -61,7 +62,7 @@ public class AjaxProcessor implements JSSProcessor {
 		String script = fn + ".apply(" + caller + ", " + ar + ");";
 		System.out.println("Executing script: " + script);
 
-		String r = sc.toJSONString(sc.executeScript(script));
+		String r = JSSON.toJSONString(sc.executeScript(script));
 		System.out.println("The result was "+r);
 		response.setContentType("application/json");
 		response.getWriter().write(r);
