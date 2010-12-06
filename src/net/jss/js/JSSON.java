@@ -18,7 +18,7 @@ public class JSSON {
 	
 	public static String toJSONString(Object jsObject) {
 		try {
-			System.out.println("Parsing " + jsObject + " to JSON string.");
+			System.out.println("Parsing " + jsObject.getClass().getName() + " to JSON string.");
 			ScriptEngine e = new ScriptEngineManager().getEngineByName("JavaScript");
 
 			// Load the required scripts.
@@ -53,8 +53,14 @@ public class JSSON {
 
 	public static boolean isJava(Object o) {
 		if (o.getClass().getName().startsWith("sun.org.mozilla.javascript.internal.")) {
+			System.out.println("Checking if "+o.getClass().getName()+" is a java object. The result is false");
 			return false;
 		}
+		System.out.println("Checking if "+o.getClass().getName()+" is a java object. The result is true");
 		return true;
+	}
+	
+	public static String analyze(Object o){
+		return "Class is "+o.getClass()+" is Java object: "+isJava(o);
 	}
 }

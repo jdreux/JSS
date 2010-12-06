@@ -30,14 +30,16 @@ public class PersistenceProvider {
 		// Get the persistence manager.
 		JDOPersistenceManagerFactory pmf = (JDOPersistenceManagerFactory)JDOHelper
 				.getPersistenceManagerFactory("datanucleus.properties");
-
-		// Now run Schema tool
-		SchemaTool schematool = new SchemaTool();
-		try {
-			schematool.validateSchema(pmf, classes);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		if(classes.size()>0){
+			// Now run Schema tool
+			SchemaTool schematool = new SchemaTool();
+			try {
+				schematool.validateSchema(pmf, classes);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		System.out.println("Opening persistence manager.");

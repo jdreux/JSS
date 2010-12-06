@@ -237,6 +237,7 @@ if (!this.JSON) {
 		
 		//If we are dealing with a Java object, use a Java parser.
 		if(net.jss.js.JSSON.isJava(value)){
+			//return "skipped "+key+" with value "+value;
 			return net.jss.js.JSSON.javaToJSONString(value);
 		}
 		

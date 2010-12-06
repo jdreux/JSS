@@ -49,7 +49,6 @@ public class FrontController extends HttpServlet {
 
 	private void serviceRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
-		System.out.println("Creating JSSContext");
 		FrontController.context = new JSSContext(request, response);
 
 		System.out.println("Front controller: received " + (isGet ? "GET" : "POST") + " request for "

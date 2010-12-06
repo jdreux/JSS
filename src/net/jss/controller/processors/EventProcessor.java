@@ -1,8 +1,7 @@
 package net.jss.controller.processors;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletContext;
@@ -16,8 +15,9 @@ import net.jss.js.JSSON;
 
 public class EventProcessor implements JSSProcessor {
 
-	AsyncContext aCtx;
-	Queue<Object> eventBuffer;
+	// AsyncContext aCtx;
+	ConcurrentLinkedQueue<Object> events;
+	ConcurrentLinkedQueue<AsyncContext> asynchronousRequests;
 
 	public static EventProcessor getInstance() {
 		HttpSession session = FrontController.context.getSession();
@@ -35,6 +35,11 @@ public class EventProcessor implements JSSProcessor {
 		return instance;
 	}
 
+	public EventProcessor() {
+		this.asynchronousRequests = new ConcurrentLinkedQueue<AsyncContext>();
+		this.events = new ConcurrentLinkedQueue<Object>();
+	}
+
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext)
 			throws ServletException, IOException {
@@ -45,60 +50,73 @@ public class EventProcessor implements JSSProcessor {
 	@Override
 	public void doPost(HttpServletRequest request, HttpServletResponse response, ServletContext servletContext)
 			throws ServletException, IOException {
+
+		System.out.println("Received async request : " + request.getParameterMap().toString());
+
 		System.out.println("Initializing AsyncContext");
-		aCtx = request.startAsync(request, response);
-		flushEvents();
+		asynchronousRequests.add(request.startAsync(request, response));
+
+		// Now that we have a request, process any events that may be in queue:
+		this.processEventQueue();
 	}
 
 	public synchronized void broadcastServerEvent(Object jsEvent) {
-		System.out.println("Event processor: brodcasting event to client: "+jsEvent);
-		System.out.println(this);
+		System.out.println("Event processor: brodcasting event to client: " + JSSON.toJSONString(jsEvent));
 		try {
-			if (aCtx == null) {
-				// AsyncContext was not initialized properly yet. Keep the event
-				// to be broadcasted later on.
-				if (eventBuffer == null)
-					eventBuffer = new LinkedList<Object>();
-				eventBuffer.add(jsEvent);
-				System.out.println("Async Context not initialized. "+eventBuffer.size()+" events in queue.");
-			} else {
-				// We have a valid AsynContext
-
-				flushEvents();
-				
-				startAsyncTransaction(jsEvent);
-			}
+			this.events.add(jsEvent);
+			this.processEventQueue();
+			System.out.println("Event queue size is: " + this.events.size());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	private void flushEvents(){
-		if (eventBuffer != null) {
-			// Process all events that might be waiting.
-			while (eventBuffer.size() > 0) {
-				startAsyncTransaction(eventBuffer.remove());
+
+	/**
+	 * Method to process several events using a single Asynchronous request.
+	 * 
+	 * @param aCtx
+	 */
+	private synchronized void processEventQueue() {
+
+		if (this.events.size() > 0 && this.asynchronousRequests.size() > 0) {
+			AsyncContext aCtx = this.asynchronousRequests.remove();
+			System.out.println("Processing " + this.events.size() + " event(s).");
+			String json = "[";
+			while(this.events.size()>0){
+				json += JSSON.toJSONString(this.events.remove());
+				if(this.events.size()>0){
+					json+=",";
+				}
 			}
+			json += "]";
+			//Object[] allEvents = this.events.toArray(new Object[this.events.size()]);
+			
+			//String json = JSSON.toJSONString(allEvents);
+			// JSSON.toJSONString(allEvents);
+			this.events.clear();
+			this.startAsyncTransaction(json, aCtx);
 		}
 	}
-	
-	private void startAsyncTransaction(final Object jsEvent) {
-		System.out.println("Starting async connection");
+
+	private void startAsyncTransaction(final String json, final AsyncContext aCtx) {
+		System.out.println("Starting Async Transaction: " + aCtx.toString());
 		aCtx.start(new Runnable() {
 			public void run() {
-				String json = JSSON.toJSONString(jsEvent);
 				System.out.println("JSON is: " + json);
 				try {
 					aCtx.getResponse().getWriter().print(json);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
-					System.out.println("Ending current thread");
-				} finally{
-					aCtx.complete();
-					aCtx = null;
+				} finally {
+					completeAsyncTransaction(aCtx);
 				}
 			}
 		});
+	}
+
+	private void completeAsyncTransaction(AsyncContext aCtx) {
+		System.out.println("Completing Async Transaction: " + aCtx.toString());
+		aCtx.complete();
+		aCtx = null;
 	}
 }

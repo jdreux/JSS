@@ -110,11 +110,13 @@ JSS.events = new function() {
 
 JSS.comet = function(params) {
 
-	function callback(event) {
-		if (event !== null) {
-			JSS.events.fireEvent(JSON.parse(event));
+	function callback(data) {
+		var eventArray = JSON.parse(data);
+		for(var i=0; i<eventArray.length; i++){
+			JSS.events.fireEvent(eventArray[i]);
 		}
-//		JSS.comet({});
+		
+		JSS.comet({});
 	}
 
 	$.ajax({

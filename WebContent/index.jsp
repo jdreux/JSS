@@ -30,7 +30,7 @@
 				obj.maxMemory = Runtime.getRuntime().maxMemory();
 				obj.totalMemory = Runtime.getRuntime().totalMemory();
 				obj.currentTime = java.util.Calendar.getInstance().getTime().toString();
-				//System.out.println("Returning "+JSON.stringify(obj));
+				System.out.println("Returning "+JSON.stringify(obj));
 				return obj;
 			}
 		</sj:script>
@@ -38,17 +38,25 @@
 		<sj:script runat="server">
 			//var systemInfo = getSystemInfo();
 			
+			function getEvent(){
+				return {type: 'systemInfoUpdate', data: getSystemInfo()};
+			}
+
 			function callback(){
-				var event = {type: 'systemInfoUpdate', data: getSystemInfo()};
+				var event = getEvent();
 				JSS.events.fireEvent(event);
 			}
 
 			if(this.interval!==undefined){
 				clearInterval(this.interval);
 			}
-	
-			this.interval = setInterval(callback, 1000);
+
+			for(var i = 0 ; i < 20; i ++)
+				setTimeout(callback, i*1000);
+			//this.interval = setTimeout(callback, 1000);
 			
+			
+
 		</sj:script>
 		
 		<script>

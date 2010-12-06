@@ -1,6 +1,6 @@
 package net.jss.events;
 
-public class Event {
+public class JSSEvent {
 	
 	private String type;
 	private Object data;
