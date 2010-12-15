@@ -23,6 +23,9 @@ public class AjaxProcessor implements JSSProcessor {
 		return instance;
 	}
 	
+	/*
+	 * 
+	 */
 	@Override
 	public void doPost(HttpServletRequest request,
 			HttpServletResponse response, ServletContext servletContext)
@@ -68,7 +71,7 @@ public class AjaxProcessor implements JSSProcessor {
 		response.getWriter().write(r);
 		System.out.println("The result was: " + r);
 	}
-	
+
 	@Override
 	public void doGet(HttpServletRequest request,
 			HttpServletResponse response, ServletContext servletContext)

@@ -17,6 +17,15 @@ import net.jss.controller.processors.EventProcessor;
 import net.jss.controller.processors.PageRequestProcessor;
 import net.jss.controller.processors.JSSProcessor;
 
+/**
+ * Front controller that forwards the request to the corresponding request processors.
+ * The mappings are:
+ * - /sj_ajax/ 		--> AjaxProcessor
+ * - /sj_console/ 	--> ConsoleProcessor
+ * - /sj_comet/ 	--> EventProcessor
+ * - *.html			--> PageRequestProcessor
+ */
+
 @WebServlet(name = "Front Controller", loadOnStartup = 1, asyncSupported = true, urlPatterns = { "/sj_ajax/",
 		"/sj_console/", "/sj_comet/", "*.html" })
 public class FrontController extends HttpServlet {

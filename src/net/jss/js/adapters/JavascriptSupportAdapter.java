@@ -12,12 +12,13 @@ public class JavascriptSupportAdapter{
 		return new JavascriptSupportAdapter();
 	}
 	
+	/**
+	 * Allows to import server side scripts located in the WebContent folder.
+	 * @param scriptName Path to the file to be loaded, for example <code>WEB-INF/server-scripts/application.js</code>
+	 * @throws FileNotFoundException
+	 */
 	public void importServerScript(String scriptName) throws FileNotFoundException{
 		ScriptCore sc = ScriptCore.getInstance();
 		sc.executeScript(new FileReader(new File(ScriptCore.SERVER_SCRIPTS_PATH+scriptName)));
 	}
-	
-	
-	
-	
 }

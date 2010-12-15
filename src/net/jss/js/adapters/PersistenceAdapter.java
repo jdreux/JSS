@@ -10,7 +10,10 @@ import javax.jdo.Transaction;
  import net.jss.persistence.PersistenceProvider;
  import net.jss.persistence.JSSEntity;
 
-
+/**
+ * This adapter is a port o
+ * @author lemendo
+ */
 public class PersistenceAdapter{
 	PersistenceManager pm;
 	

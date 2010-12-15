@@ -16,6 +16,12 @@ import com.google.gson.Gson;
 
 public class JSSON {
 	
+	/**
+	 * Will convert a Javascript object to JSON using modified version of 
+	 * David Crockford's of json2.js.
+	 * @param jsObject
+	 * @return a JSON representation of the object as a String.
+	 */
 	public static String toJSONString(Object jsObject) {
 		try {
 			System.out.println("Parsing " + jsObject.getClass().getName() + " to JSON string.");
@@ -43,14 +49,24 @@ public class JSSON {
 			return e.toString();
 		}
 	}
-
+	
+	/**
+	 * Converts a Java object to JSON, using Google's GSON library.
+	 * @param javaObject
+	 * @return a JSON representation of the object as a String.
+	 */
 	public static String javaToJSONString(Object javaObject) {
 		Gson gson = new Gson();
 		System.out.println("Parsing java object " + javaObject + " to JSON string.");
 		System.out.println("The result is: " + gson.toJson(javaObject));
 		return gson.toJson(javaObject);
 	}
-
+	
+	/**
+	 * Checks if an object is a Java object.
+	 * @param o the object ot check against.
+	 * @return boolean
+	 */
 	public static boolean isJava(Object o) {
 		if (o.getClass().getName().startsWith("sun.org.mozilla.javascript.internal.")) {
 			System.out.println("Checking if "+o.getClass().getName()+" is a java object. The result is false");
